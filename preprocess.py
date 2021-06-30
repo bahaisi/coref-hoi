@@ -4,7 +4,7 @@ import os
 import re
 import collections
 import json
-from transformers import BertTokenizer
+from transformers import AutoTokenizer
 import conll
 import util
 
@@ -246,7 +246,7 @@ def minimize_partition(partition, extension, args, tokenizer):
 
 
 def minimize_language(args):
-    tokenizer = BertTokenizer.from_pretrained(args.tokenizer_name)
+    tokenizer = AutoTokenizer.from_pretrained(args.tokenizer_name)
 
     minimize_partition('dev', 'v4_gold_conll', args, tokenizer)
     minimize_partition('test', 'v4_gold_conll', args, tokenizer)

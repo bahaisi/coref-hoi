@@ -1,7 +1,7 @@
 import util
 import numpy as np
 import random
-from transformers import BertTokenizer
+from transformers import AutoTokenizer
 import os
 from os.path import join
 import json
@@ -80,7 +80,7 @@ class CorefDataProcessor:
 class Tensorizer:
     def __init__(self, config):
         self.config = config
-        self.tokenizer = BertTokenizer.from_pretrained(config['bert_tokenizer_name'])
+        self.tokenizer = AutoTokenizer.from_pretrained(config['bert_tokenizer_name'])
 
         # Will be used in evaluation
         self.stored_info = {}

@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn
-from transformers import BertModel
+from transformers import AutoModel
 import util
 import logging
 from collections import Iterable
@@ -30,7 +30,7 @@ class CorefModel(nn.Module):
 
         # Model
         self.dropout = nn.Dropout(p=config['dropout_rate'])
-        self.bert = BertModel.from_pretrained(config['bert_pretrained_name_or_path'])
+        self.bert = AutoModel.from_pretrained(config['bert_pretrained_name_or_path'])
 
         self.bert_emb_size = self.bert.config.hidden_size
         self.span_emb_size = self.bert_emb_size * 3
