@@ -20,6 +20,7 @@ class CorefDataProcessor:
         self.max_seg_len = config['max_segment_len']
         self.max_training_seg = config['max_training_sentences']
         self.data_dir = config['data_dir']
+        self.additional_train_filename = config.get('additional_train_filename')
 
         # Get tensorized samples
         cache_path = self.get_cache_path()
@@ -33,17 +34,25 @@ class CorefDataProcessor:
             self.tensor_samples = {}
             tensorizer = Tensorizer(self.config)
             paths = {
-                'trn': join(self.data_dir, f'train.{language}.{self.max_seg_len}.jsonlines'),
-                'dev': join(self.data_dir, f'dev.{language}.{self.max_seg_len}.jsonlines'),
-                'tst': join(self.data_dir, f'test.{language}.{self.max_seg_len}.jsonlines')
+                'trn': [join(self.data_dir, f'train.{language}.{self.max_seg_len}.jsonlines')],
+                'dev': [join(self.data_dir, f'dev.{language}.{self.max_seg_len}.jsonlines')],
+                'tst': [join(self.data_dir, f'test.{language}.{self.max_seg_len}.jsonlines')]
             }
-            for split, path in paths.items():
-                logger.info('Tensorizing examples from %s; results will be cached)' % path)
+            if self.additional_train_filename:
+                paths['trn'].append(join(self.data_dir, self.additional_train_filename))
+
+            for split, filenames in paths.items():
+                logger.info('Tensorizing examples for split %s; results will be cached)' % split)
                 is_training = (split == 'trn')
-                with open(path, 'r') as f:
-                    samples = [json.loads(line) for line in f.readlines()]
+                samples = []
+                for path in filenames:
+                    with open(path, 'r') as f:
+                        subsamples = [json.loads(line) for line in f.readlines()]
+                        samples.extend(subsamples)
+                        logger.info(f"{split}: Added {len(subsamples)} from {path}.")
                 tensor_samples = [tensorizer.tensorize_example(sample, is_training) for sample in samples]
-                self.tensor_samples[split] = [(doc_key, self.convert_to_torch_tensor(*tensor)) for doc_key, tensor in tensor_samples]
+                self.tensor_samples[split] = [(doc_key, self.convert_to_torch_tensor(*tensor))
+                                              for doc_key, tensor in tensor_samples]
             self.stored_info = tensorizer.stored_info
             # Cache tensorized samples
             with open(cache_path, 'wb') as f:
