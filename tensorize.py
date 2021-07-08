@@ -20,7 +20,8 @@ class CorefDataProcessor:
         self.max_seg_len = config['max_segment_len']
         self.max_training_seg = config['max_training_sentences']
         self.data_dir = config['data_dir']
-        self.additional_train_filename = config.get('additional_train_filename')
+        self.additional_train_filename = config['additional_train_filename'] \
+            if 'additional_train_filename' in config else False
 
         # Get tensorized samples
         cache_path = self.get_cache_path()
