@@ -32,10 +32,11 @@ function compile_language() {
 }
 
 compile_language english
-#compile_language chinese
-#compile_language arabic
+compile_language chinese
+compile_language arabic
 
-# Everything above this line needs Python 2.
-
+python3 preprocess.py --input_dir $data_dir --output_dir $data_dir --seg_len 64
+python3 preprocess.py --input_dir $data_dir --output_dir $data_dir --seg_len 128
+python3 preprocess.py --input_dir $data_dir --output_dir $data_dir --seg_len 256
 python3 preprocess.py --input_dir $data_dir --output_dir $data_dir --seg_len 384
 python3 preprocess.py --input_dir $data_dir --output_dir $data_dir --seg_len 512
